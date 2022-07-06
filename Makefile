@@ -16,3 +16,15 @@ setup: hosts cluster helm_deps
 
 uninstall:
 	./uninstall.sh
+
+traefik: uninstall
+	./upgrade.sh traefik
+
+istio: uninstall
+	./upgrade.sh istio
+
+istiod: istio
+	./upgrade.sh istiod
+
+istio-gateway: istiod
+	./upgrade.sh istio-gateway

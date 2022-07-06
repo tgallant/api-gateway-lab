@@ -1,0 +1,27 @@
+{{- $chart := .Chart }}
+{{- $release := .Release }}
+{{- $values := .Values }}
+
+{{- range $ingressroute := $values.ingressroutes }}
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ $release.Name }}-{{ $ingressroute.name }}
+  namespace: {{ $release.Namespace }}
+  labels:
+    chart: {{ $chart.Name }}-{{ $chart.Version | replace "+" "_" }}
+    release: {{ $release.Name }}
+    heritage: {{ $release.Service }}
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: {{ $ingressroute.match }}
+      kind: Rule
+      middlewares:
+        - name: prefix-strip
+      services:
+        - name: {{ $release.Name }}-{{ $ingressroute.name }}
+          port: {{ $ingressroute.port }}
+{{- end }}
