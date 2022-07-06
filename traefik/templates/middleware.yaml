@@ -1,0 +1,13 @@
+{{- $chart := .Chart }}
+{{- $release := .Release }}
+{{- $values := .Values }}
+
+{{- range $middleware := $values.middlewares }}
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ $middleware.name }}
+spec:
+  {{ $middleware.args | toYaml | indent 2 | trim }}
+{{- end }}

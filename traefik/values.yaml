@@ -1,0 +1,81 @@
+# Default values for traefik.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# traefik configuration
+traefik:
+  service:
+    type: NodePort
+  ingressClass:
+    enabled: true
+  ports:
+    web:
+      nodePort: 30000
+  logs:
+    general:
+      level: DEBUG
+    access:
+      enabled: true
+  nodeSelector:
+    ingress-ready: "true"
+
+# web server deployments
+deployments:
+  - name: web-nginx
+    image: nginx:alpine
+    command: ["nginx"]
+    args:
+      - -g
+      - daemon off;
+  - name: web-python
+    image: python:alpine
+    command: ["python"]
+    args:
+      - -m
+      - http.server
+
+# expose the web server ports 
+services:
+  - name: web-python
+    type: ClusterIP
+    port: 8000
+  - name: web-nginx
+    type: ClusterIP
+    port: 80
+
+# route definitions using the Ingress resource
+ingresses:
+  - name: web-python
+    host: gateway.local
+    path: /ingress/app1
+    port: 8000
+  - name: web-nginx
+    host: gateway.local
+    path: /ingress/app2
+    port: 80
+
+# route definitions using the traefik IngressRoute CRD
+ingressroutes:
+  - name: web-python
+    match: Host(`gateway.local`) && PathPrefix(`/ingressroute/app1`)
+    port: 8000
+  - name: web-nginx
+    match: Host(`gateway.local`) && PathPrefix(`/ingressroute/app2`)
+    port: 80
+
+# traefik routing middlewares
+middlewares:
+  - name: dashboard-redirect
+    args:
+      redirectRegex:
+        regex: http://gateway.local:8000/dashboard$
+        replacement: http://gateway.local:8000/dashboard/
+        permanent: true
+  - name: prefix-strip
+    args:
+      stripPrefix:
+        prefixes:
+          - /ingress/app1
+          - /ingress/app2
+          - /ingressroute/app1
+          - /ingressroute/app2

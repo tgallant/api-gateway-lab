@@ -1,0 +1,31 @@
+{{- $chart := .Chart }}
+{{- $release := .Release }}
+{{- $values := .Values }}
+
+{{- range $ingress := $values.ingresses }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $release.Name }}-{{ $ingress.name }}
+  namespace: {{ $release.Namespace }}
+  labels:
+    chart: {{ $chart.Name }}-{{ $chart.Version | replace "+" "_" }}
+    release: {{ $release.Name }}
+    heritage: {{ $release.Service }}
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+    traefik.ingress.kubernetes.io/router.middlewares: default-prefix-strip@kubernetescrd
+spec:
+  rules:
+    - host: {{ $ingress.host }}
+      http:
+        paths:
+          - path: {{ $ingress.path }}
+            pathType: Exact
+            backend:
+              service:
+                name: {{ $release.Name }}-{{ $ingress.name }}
+                port:
+                  number: {{ $ingress.port }}
+{{- end }}

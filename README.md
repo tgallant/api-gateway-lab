@@ -17,3 +17,40 @@ cluster.
 ```bash
 make cluster
 ```
+
+To install one of the charts run one of the following.
+
+```bash
+# installs the traefik-basic chart
+make traefik-basic
+# installs the traefik-ingressroute chart
+make traefik-ingressroute
+```
+
+To uninstall the currently installed charts use the following.
+
+```bash
+make uninstall
+```
+
+For any other needs the `helm` and/or `kubectl` commands can be used directly.
+
+## traefik
+
+https://doc.traefik.io/traefik/
+
+```mermaid
+graph TD
+    A[Request] --> B[traefik]
+    B -->|/app1| D[web-python]
+    B -->|/app2| E[web-nginx]
+    B -->|/dashboard| E[traefik dashboard]
+```
+
+### traefik-basic
+
+https://doc.traefik.io/traefik/routing/providers/kubernetes-ingress/
+
+### traefik-ingressroute
+
+https://doc.traefik.io/traefik/routing/providers/kubernetes-crd/
