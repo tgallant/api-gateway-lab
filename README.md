@@ -54,3 +54,11 @@ https://doc.traefik.io/traefik/routing/providers/kubernetes-ingress/
 ### traefik-ingressroute
 
 https://doc.traefik.io/traefik/routing/providers/kubernetes-crd/
+
+## istio
+
+https://istio.io/latest/
+
+### istio-gateway
+
+https://istiobyexample.dev/ingress/

@@ -1,0 +1,34 @@
+{{- $chart := .Chart }}
+{{- $release := .Release }}
+{{- $values := .Values }}
+
+{{- range $deployment := .Values.deployments }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $release.Name }}-{{ $deployment.name }}
+  namespace: {{ $release.Namespace }}
+  labels:
+    chart: {{ $chart.Name }}-{{ $chart.Version | replace "+" "_" }}
+    release: {{ $release.Name }}
+    heritage: {{ $release.Service }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ $chart.Name }}-{{ $deployment.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ $chart.Name }}-{{ $deployment.name }}
+        release: {{ $release.Name }}
+    spec:
+      containers:
+        - name: {{ $chart.Name }}-{{ $deployment.name }}
+          image: {{ $deployment.image }}
+          imagePullPolicy: IfNotPresent
+          command: {{ $deployment.command }}
+          args:
+            {{ $deployment.args | toYaml | indent 12 | trim }}
+{{- end }}

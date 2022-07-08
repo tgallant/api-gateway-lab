@@ -1,0 +1,15 @@
+# Default values for istiod.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# istio base config values
+base:
+  global:
+    istioNamespace: default
+
+# istiod config values
+istiod:
+  global:
+    istioNamespace: default
+  sidecarInjectorWebhook:
+    enableNamespacesByDefault: true

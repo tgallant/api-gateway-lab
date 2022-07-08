@@ -1,0 +1,12 @@
+dependencies:
+- name: gateway
+  repository: https://istio-release.storage.googleapis.com/charts
+  version: 1.14.1
+- name: prometheus
+  repository: https://prometheus-community.github.io/helm-charts
+  version: 15.10.3
+- name: kiali-server
+  repository: https://kiali.org/helm-charts
+  version: 1.53.0
+digest: sha256:1c7fcb48a33bba1861c10174a82d5b2d090f4b9e3d2450f78b96726b4a43b004
+generated: "2022-07-09T01:00:18.868725-07:00"

@@ -10,7 +10,7 @@ hosts:
 helm_deps:
 	./install_helm_deps.sh traefik
 	./install_helm_deps.sh istiod
-	./install_helm_deps.sh istio-gateway
+	./install_helm_deps.sh istio-ingressgateway
 
 setup: hosts cluster helm_deps
 
@@ -20,11 +20,8 @@ uninstall:
 traefik: uninstall
 	./upgrade.sh traefik
 
-istio: uninstall
-	./upgrade.sh istio
-
-istiod: istio
+istiod: uninstall
 	./upgrade.sh istiod
 
-istio-gateway: istiod
-	./upgrade.sh istio-gateway
+istio: istiod
+	./upgrade.sh istio-ingressgateway
