@@ -1,0 +1,26 @@
+{{- $chart := .Chart }}
+{{- $release := .Release }}
+{{- $values := .Values }}
+
+{{- range $service := $values.services }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $release.Name }}-{{ $service.name }}
+  namespace: {{ $release.Namespace }}
+  labels:
+    chart: {{ $chart.Name }}-{{ $chart.Version | replace "+" "_" }}
+    release: {{ $release.Name }}
+    heritage: {{ $release.Service }}
+    app: {{ $chart.Name }}-{{ $service.name }}
+spec:
+  type: {{ $service.type }}
+  ports:
+    - port: {{ $service.port }}
+      targetPort: {{ $service.port }}
+      protocol: TCP
+      name: {{ $service.name }}
+  selector:
+    app: {{ $chart.Name }}-{{ $service.name }}
+{{- end }}

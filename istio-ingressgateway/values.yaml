@@ -1,0 +1,58 @@
+# Default values for istio-ingressgateway.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# istio gateway config values
+gateway:
+  service:
+    type: NodePort
+    ports:
+      - name: http
+        port: 80
+        protocol: TCP
+        targetPort: 80
+        nodePort: 30000
+
+# kiali config values
+kiali-server:
+  istio_namespace: default
+  external_services:
+    prometheus:
+      url: "http://istio-ingressgateway-prometheus-server.default.svc.cluster.local"
+  auth:
+    strategy: anonymous
+
+# web server deployments
+deployments:
+  - name: web-nginx
+    image: nginx:alpine
+    command: ["nginx"]
+    args:
+      - -g
+      - daemon off;
+  - name: web-python
+    image: python:alpine
+    command: ["python"]
+    args:
+      - -m
+      - http.server
+
+# expose the web server ports
+services:
+  - name: web-python
+    type: ClusterIP
+    port: 8000
+  - name: web-nginx
+    type: ClusterIP
+    port: 80
+
+# route definitions using istio's VirtualService CRD
+virtualservices:
+  - name: web-python
+    host: gateway.local
+    route: /app1
+    port: 8000
+  - name: web-nginx
+    host: gateway.local
+    route: /app2
+    port: 80

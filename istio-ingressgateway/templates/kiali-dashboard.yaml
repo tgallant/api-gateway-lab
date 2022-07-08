@@ -1,0 +1,26 @@
+{{- $chart := .Chart }}
+{{- $release := .Release }}
+
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: kiali-dashboard
+  namespace: {{ $release.Namespace }}
+  labels:
+    chart: {{ $chart.Name }}-{{ $chart.Version | replace "+" "_" }}
+    release: {{ $release.Name }}
+    heritage: {{ $release.Service }}
+spec:
+  hosts:
+    - gateway.local
+  gateways:
+    - istio-ingressgateway
+  http:
+    - match:
+        - uri:
+            prefix: /kiali
+      route:
+        - destination:
+            host: kiali
+            port:
+              number: 20001

@@ -1,0 +1,32 @@
+{{- $chart := .Chart }}
+{{- $release := .Release }}
+{{- $values := .Values }}
+
+{{- range $vs := .Values.virtualservices }}
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: {{ $release.Name }}-{{ $vs.name }}
+  namespace: {{ $release.Namespace }}
+  labels:
+    chart: {{ $chart.Name }}-{{ $chart.Version | replace "+" "_" }}
+    release: {{ $release.Name }}
+    heritage: {{ $release.Service }}
+spec:
+  hosts:
+    - {{ $vs.host }}
+  gateways:
+    - istio-ingressgateway
+  http:
+    - match:
+        - uri:
+            prefix: {{ $vs.route }}
+      rewrite:
+        uri: /
+      route:
+        - destination:
+            host: {{ $release.Name }}-{{ $vs.name }}
+            port:
+              number: {{ $vs.port }}
+{{- end }}
